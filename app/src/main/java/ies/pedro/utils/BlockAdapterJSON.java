@@ -19,7 +19,7 @@ public class BlockAdapterJSON extends TypeAdapter<Block> {
         }
         String value = reader.nextString();
        // Block b= new Block();
-        block.setValue(value);
+        block.setType(value);
 
         return block;
     }
@@ -28,7 +28,7 @@ public class BlockAdapterJSON extends TypeAdapter<Block> {
             writer.nullValue();
             return;
         }
-        String xy = value.getValue();
+        String xy = value.getType();
         writer.value(xy);
     }
 }

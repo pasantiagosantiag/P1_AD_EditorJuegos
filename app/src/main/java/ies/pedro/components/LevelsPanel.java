@@ -89,7 +89,7 @@ public class LevelsPanel extends VBox implements IBlockListener {
                 result.get();
                 if (result.get().getName() != "") {
                     //se añade y se deja seleccionado
-                    this.listlevels.getItems().add(result.get());
+                    this.listlevels.getItems().add(result.get().getName());
                     this.listlevels.getSelectionModel().select(result.get());//.select(this.listlevels.getSelectionModel());
                     //se llama a la capa superior para informar
                     if (this.onadd != null) {

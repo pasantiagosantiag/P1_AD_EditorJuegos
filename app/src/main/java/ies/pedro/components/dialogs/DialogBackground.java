@@ -18,7 +18,7 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import ies.pedro.components.utils.ImageWithPath;
+import ies.pedro.utils.ImageWithPath;
 
 public class DialogBackground extends Dialog<ImageWithPath> {
     private ImageWithPath image;

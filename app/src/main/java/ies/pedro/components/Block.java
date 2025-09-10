@@ -15,11 +15,11 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.Pane;
-
-
-
+import javafx.scene.paint.Color;
 
 /**
  *
@@ -27,12 +27,12 @@ import javafx.scene.layout.Pane;
  */
 public class Block {
 
-    //private Rectangle r;
+    // private Rectangle r;
     private ImageView imgv;
     private Pane panel;
-   
+    
     private boolean selected;
-    private Size size;
+    // private Size size;
     private static Image img;
     private static Size img_block_size;
     private static Map<String, Rectangle2D> imgs_coordenadas;
@@ -44,26 +44,42 @@ public class Block {
 
             int w = App.CELLWIDTH;
             int h = App.CELLHEIGHT;
-            Size img_block_size = new Size(w, h);
 
-            //img = new Image(Block.class.getResource("/blocks.png").toURI().toString());
-            img = new Image(Block.class.getResource("/bloques.png").toURI().toString());
+            // img = new Image(Block.class.getResource("/blocks.png").toURI().toString());
+            img = new Image(Block.class.getResource("/elementos.png").toURI().toString());
 
             imgs_coordenadas = new HashMap<>();
-            imgs_coordenadas.put("White", new Rectangle2D(0, 0, w, h));
-            imgs_coordenadas.put("Orange", new Rectangle2D(16, 0, w, h));
-            imgs_coordenadas.put("Cyan", new Rectangle2D(32, 0, w, h));
-
-            imgs_coordenadas.put("Green", new Rectangle2D(48, 0, w, h));
-
-            imgs_coordenadas.put("Red", new Rectangle2D(0, 8, w, h));
-            imgs_coordenadas.put("Blue", new Rectangle2D(16, 8, w, h));
-            imgs_coordenadas.put("Magenta", new Rectangle2D(32, 8, w, h));
-
-            imgs_coordenadas.put("Yellow", new Rectangle2D(48, 8, w, h));
-            imgs_coordenadas.put("Yellow", new Rectangle2D(48, 8, w, h));
-            imgs_coordenadas.put("Eraser", new Rectangle2D(48, 16, w, h));
-
+            imgs_coordenadas.put("TierraGrande", new Rectangle2D(208, 48, 48, 16));
+            imgs_coordenadas.put("TierraPequenya", new Rectangle2D(256, 80, 16, 16));
+           // imgs_coordenadas.put("TierraMuro", new Rectangle2D(208, 64, 48, 48));
+  imgs_coordenadas.put("CuadradoRojo", new Rectangle2D(144, 128, 16, 16));
+  imgs_coordenadas.put("CuadradoRojoPequeny", new Rectangle2D(160, 128, 8, 8));
+  imgs_coordenadas.put("CuadradoVerde", new Rectangle2D(144, 144, 16, 16));
+  imgs_coordenadas.put("CuadradoVerdePequeny", new Rectangle2D(160, 144, 8, 8));
+ imgs_coordenadas.put("CuadradoNaranja", new Rectangle2D(176, 128, 16, 16));
+  imgs_coordenadas.put("CuadradoNaranjaPequeny", new Rectangle2D(192, 128, 8, 8));
+ imgs_coordenadas.put("CuadradoAzul", new Rectangle2D(176, 144, 16, 16));
+  imgs_coordenadas.put("CuadradoAzulPequeny", new Rectangle2D(176, 144, 8, 8));
+ imgs_coordenadas.put("CuadradoHielo", new Rectangle2D(0, 96, 16, 16));
+  imgs_coordenadas.put("CuadradoHieloPequeny", new Rectangle2D(16, 96, 8, 8));
+  imgs_coordenadas.put("CuadradoSueloVerde", new Rectangle2D(32, 96, 16, 16));
+  imgs_coordenadas.put("CuadradoSueloVerdePequenyo", new Rectangle2D(48, 96, 8, 8));
+ 
+            
+            /*
+             * imgs_coordenadas.put("Orange", new Rectangle2D(16, 0, w, h));
+             * imgs_coordenadas.put("Cyan", new Rectangle2D(32, 0, w, h));
+             * 
+             * imgs_coordenadas.put("Green", new Rectangle2D(48, 0, w, h));
+             * 
+             * imgs_coordenadas.put("Red", new Rectangle2D(0, 8, w, h));
+             * imgs_coordenadas.put("Blue", new Rectangle2D(16, 8, w, h));
+             * imgs_coordenadas.put("Magenta", new Rectangle2D(32, 8, w, h));
+             * 
+             * imgs_coordenadas.put("Yellow", new Rectangle2D(48, 8, w, h));
+             * imgs_coordenadas.put("Yellow", new Rectangle2D(48, 8, w, h));
+             * imgs_coordenadas.put("Eraser", new Rectangle2D(48, 16, w, h));
+             */
 
         } catch (URISyntaxException ex) {
             Logger.getLogger(Block.class.getName()).log(Level.SEVERE, null, ex);
@@ -71,18 +87,25 @@ public class Block {
 
     }
 
-    public Block() {
-
-        
+    public Block(String type) {
+        this.type = type;
         this.selected = false;
-        this.size = null;
-        this.type = null;
+        // this.size = null;
+
         this.imgv = new ImageView(Block.getImage());
         this.panel = new Pane();
         this.panel.getChildren().add(imgv);
-       // this.panel.setBorder(new Border(new BorderStroke(Color.TRANSPARENT, BorderStrokeStyle.SOLID, null, null)));
-        
-        this.blocklisteners= new ArrayList();
+        var rectangulo = Block.getCoordenadaByName(type);
+        this.imgv.setViewport(rectangulo);
+        this.imgv.setFitWidth(rectangulo.getWidth() * App.SCALE);// this.size.getWidth());// App.CELLWIDTH* App.SCALE);
+        this.imgv.setFitHeight(rectangulo.getHeight() * App.SCALE);// this.size.getWidth());// App.CELLHEIGHT*
+                                                                   // App.SCALE);
+        this.imgv.setOnMouseClicked(eh -> {
+            this.blocklisteners.forEach(a -> {
+                a.onClicked(this);
+            });
+        });
+        this.blocklisteners = new ArrayList();
     }
 
     public static Image getImage() {
@@ -90,9 +113,9 @@ public class Block {
     }
 
     public static String[] getNamesBlocks() {
-        
 
-        return Arrays.stream(Block.imgs_coordenadas.keySet().toArray()).toArray(String[]::new);//(String[]) Block.imgs_coordenadas.keySet().toArray();
+        return Arrays.stream(Block.imgs_coordenadas.keySet().toArray()).toArray(String[]::new);// (String[])
+                                                                                               // Block.imgs_coordenadas.keySet().toArray();
     }
 
     public static Rectangle2D getCoordenadaByName(String name) {
@@ -103,40 +126,30 @@ public class Block {
         return Block.img_block_size;
     }
 
-    public void init() {
-
-        this.imgv.setViewport(Block.getCoordenadaByName(type));
-        this.imgv.setFitWidth(App.CELLWIDTH* App.SCALE);
-        this.imgv.setFitHeight(App.CELLHEIGHT* App.SCALE);
-        this.imgv.setOnMouseClicked(eh -> {
-           this.blocklisteners.forEach(a->{a.onClicked(this);} );        
-        });
-    }
-
-    
-
     public boolean isSelected() {
         return selected;
     }
 
     public void select() {
-        this.selected =true;
-        
+        this.selected = true;
+
         this.panel.setStyle("-fx-background-color: FF0000;");
     }
-    public void unselect(){
-        this.selected=false;
+
+    public void unselect() {
+        this.selected = false;
         this.panel.setStyle("");
     }
-    
-    public Size getSize() {
-        return size;
-    }
 
-    public void setSize(Size size) {
-        this.size = size;
-    }
-
+    /*
+     * public Size getSize() {
+     * return size;
+     * }
+     * 
+     * public void setSize(Size size) {
+     * this.size = size;
+     * }
+     */
     public Node getComponent() {
         return this.panel;
     }
@@ -158,7 +171,8 @@ public class Block {
     public void addBlocklistener(IBlockListener blocklistener) {
         this.blocklisteners.add(blocklistener);
     }
-    public void removeBlocklistener(IBlockListener blocklistener){
+
+    public void removeBlocklistener(IBlockListener blocklistener) {
         this.blocklisteners.remove(blocklistener);
     }
 

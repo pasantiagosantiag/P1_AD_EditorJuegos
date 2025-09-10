@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import ies.pedro.utils.Size;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.layout.FlowPane;
 
 
@@ -20,7 +21,7 @@ public class BlocksPanel extends FlowPane implements IBlockListener {
     private Block selected;
 
     public BlocksPanel() {
-        super();
+        super(Orientation.HORIZONTAL, 10, 10);
         this.blocks = new ArrayList<>();
         this.setPrefWrapLength(110); // preferred width allows for two columns
         //this.setStyle("-fx-background-color: FF0000;");
@@ -36,17 +37,10 @@ public class BlocksPanel extends FlowPane implements IBlockListener {
     }
 
     public void init() {
-        int col = 0, row = 0;
-
-        this.setVgap(5);
-        this.setHgap(5);
-
         for (int i = 0; i < this.blocks.size(); i++) {
             final Block b = this.blocks.get(i);
-            b.setSize(this.blockSize);
             b.addBlocklistener(this);
-            b.init();
-
+            
             this.getChildren().add(b.getComponent());
            
 
@@ -77,6 +71,7 @@ public class BlocksPanel extends FlowPane implements IBlockListener {
         if(this.selected!=null)
             this.selected.unselect();
         this.selected = b;
+        System.out.println("Se ha seleccionado:"+ this.selected.getType());
         b.select();
      }
 

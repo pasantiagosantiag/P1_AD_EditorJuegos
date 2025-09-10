@@ -7,8 +7,8 @@ import ies.pedro.components.*;
 import ies.pedro.components.Block;
 import ies.pedro.components.dialogs.DialogBackground;
 import ies.pedro.components.dialogs.DialogTime;
-import ies.pedro.components.utils.ImageWithPath;
 import ies.pedro.model.*;
+import ies.pedro.utils.ImageWithPath;
 import ies.pedro.utils.Size;
 import jakarta.xml.bind.JAXBException;
 
@@ -51,7 +51,7 @@ public class App extends Application {
 
     Scene scene;
     public static int SCALE = 3;
-    public static int CELLWIDTH = 16;
+    public static int CELLWIDTH = 8;
     public static int CELLHEIGHT = 8;
     private final int width = 224 * SCALE;
     private final int height = 240 * SCALE;
@@ -105,8 +105,8 @@ public class App extends Application {
         Block tb;
         String[] nombres = Block.getNamesBlocks();
         for (String nombre : nombres) {
-            tb = new Block();
-            tb.setTipo(nombre);
+            tb = new Block(nombre);
+            //tb.setTipo(nombre);
             b.addBlock(tb);
             tb.addBlocklistener(this.editor);
         }
@@ -121,11 +121,11 @@ public class App extends Application {
      */
     private EditorCanvas createEditor() {
         this.editor = new EditorCanvas();
-        this.editor.setBoard_size(new Size(this.width*2, this.height));
+       // this.editor.setBoard_size(new Size(this.width*2, this.height));
         //por los bordes da 29 filas y 13 columnas
-        this.editor.setRows(ROWS);
+       // this.editor.setRows(ROWS);
         //por los bordes
-        this.editor.setCols(COLUMNS);
+       // this.editor.setCols(COLUMNS);
         this.editor.init();
         return this.editor;
     }
@@ -139,7 +139,8 @@ public class App extends Application {
         levelspanel.init();
         levelspanel.setOnadd((s) -> {
             Level l = new Level(s.getName(),s.getSize());
-            l.setSize(new Size(240 / 8, 240 / 8));
+           
+            l.setSize(s.getSize());
             l.init();
             this.levels.addLevel(l);
             this.levels.setSelected(l.getName());

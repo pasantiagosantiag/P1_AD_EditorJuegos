@@ -1,4 +1,4 @@
-package ies.pedro.components.utils;
+package ies.pedro.utils;
 
 import javafx.scene.image.Image;
 import java.io.File;
