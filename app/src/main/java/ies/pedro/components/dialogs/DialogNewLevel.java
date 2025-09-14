@@ -14,7 +14,7 @@ import ies.pedro.utils.Size;
 
 public class DialogNewLevel extends Dialog<NewLevelResponse> {
     private int max_cell_x = 140;
-    private int max_cell_y = 40;
+   // private int max_cell_y = 40;
     private String text;
 
     public DialogNewLevel() {
@@ -40,7 +40,7 @@ public class DialogNewLevel extends Dialog<NewLevelResponse> {
         width.setShowTickLabels(true);
         width.setShowTickMarks(true);
         width.setSnapToTicks(true);
-        Slider height = new Slider();
+       /* Slider height = new Slider();
         height.setMin(1);
         height.setMax(max_cell_y);
         height.setBlockIncrement(1);
@@ -48,22 +48,22 @@ public class DialogNewLevel extends Dialog<NewLevelResponse> {
         height.setMajorTickUnit(1);
         height.setMinorTickCount(0);
         height.setSnapToTicks(true);
-        height.setShowTickMarks(true);
+        height.setShowTickMarks(true);*/
 
         grid.add(new Label("Nombre:"), 0, 0);
         grid.add(nombre, 1, 0);
         grid.add(new Label("Columnas:"), 0, 1);
         grid.add(width, 1, 1);
-        grid.add(new Label("Filas:"), 0, 2);
-        grid.add(height, 1, 2);
+       /* grid.add(new Label("Filas:"), 0, 2);
+        grid.add(height, 1, 2);*/
         Label tfw = new Label();
         tfw.setMinWidth(50);
         tfw.textProperty().bindBidirectional(width.valueProperty(), new NumberStringConverter());
         grid.add(tfw, 2, 1);
-        Label tfh = new Label();
+      /*  Label tfh = new Label();
         tfh.textProperty().bindBidirectional(height.valueProperty(), new NumberStringConverter());
        tfh.setMinWidth(50);
-        grid.add(tfh, 2, 2);
+        grid.add(tfh, 2, 2);*/
 
         this.getDialogPane().setContent(grid);
         this.setResultConverter(dialogButton -> {

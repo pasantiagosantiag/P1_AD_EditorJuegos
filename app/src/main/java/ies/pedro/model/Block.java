@@ -8,6 +8,8 @@ import com.google.gson.annotations.Expose;
 
 import ies.pedro.utils.Point;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import javafx.geometry.Rectangle2D;
 import java.io.Serializable;
 
 
@@ -15,14 +17,26 @@ import java.io.Serializable;
 public class Block implements  Serializable {
     @Expose
     private String type;
-    private Point point;
 
+
+
+
+    private Rectangle2D rectangle;
     public Block(){
         this.type=null;
     }
-    public Block(String type,Point point){
+
+    public Block(String type,Rectangle2D rectangle){
         this.type=type;
-        this.point=point;
+        this.rectangle=rectangle;
+        System.out.println(rectangle);
+    }
+    public Rectangle2D getRectangle() {
+        return rectangle;
+    }
+
+    public void setRectangle(Rectangle2D rectangle) {
+        this.rectangle = rectangle;
     }
     public String getType(){
         return this.type;
@@ -34,14 +48,9 @@ public class Block implements  Serializable {
         return this.type==null;
     }
     
-    public Point getPoint() {
-        return point;
-    }
-    public void setPoint(Point point) {
-        this.point = point;
-    }
+
     @Override
     public String toString(){
-        return this.type+" "+this.point;
+        return this.type+" "+this.rectangle;
     }
 }

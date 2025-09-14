@@ -40,7 +40,6 @@ public class BlocksPanel extends FlowPane implements IBlockListener {
         for (int i = 0; i < this.blocks.size(); i++) {
             final Block b = this.blocks.get(i);
             b.addBlocklistener(this);
-            
             this.getChildren().add(b.getComponent());
            
 

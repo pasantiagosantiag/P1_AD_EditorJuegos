@@ -17,6 +17,8 @@ import java.io.IOException;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Optional;
 
 import java.util.logging.Logger;
@@ -57,19 +59,19 @@ public class App extends Application {
     private final int height = 240 * SCALE;
     private final int ROWS = 29;
     private final int COLUMNS = 13;
-  
+
     final FileChooser fileChooser;
     private EditorCanvas editor;
     private MediaPlayer mp;
     private LevelsPanel levelsPanel;
-    private  Levels levels;
+    private Levels levels;
 
 
     public App() {
         super();
         this.levels = new Levels();
         fileChooser = new FileChooser();
-      
+
     }
 
 
@@ -77,8 +79,9 @@ public class App extends Application {
     public void start(Stage stage) {
         BorderPane border = new BorderPane();
         border.setCenter(this.createEditor());
-        border.setLeft(this.createBlockMenu());
-        border.setRight(this.levelsPanel=this.createLevelPanel());
+       // border.setLeft(this.createBlockMenu());
+        border.setLeft(this.createBlockMenu());//new ElementsPanel());
+        border.setRight(this.levelsPanel = this.createLevelPanel());
         border.setTop(this.createMenu());
         this.scene = new Scene(border, this.width + 330, this.height + 50);
         stage.setTitle("Mario Editor");
@@ -98,34 +101,94 @@ public class App extends Application {
     /**
      * Crea el panel lateral de bloques
      *
-
      */
-    private Pane createBlockMenu() {
-        BlocksPanel b = new BlocksPanel();
-        Block tb;
-        String[] nombres = Block.getNamesBlocks();
-        for (String nombre : nombres) {
-            tb = new Block(nombre);
-            //tb.setTipo(nombre);
-            b.addBlock(tb);
-            tb.addBlocklistener(this.editor);
-        }
-        b.init();
-        return b;
+    private ElementsPanel createBlockMenu() {
+        HashMap<String,ArrayList<Block>> map = new HashMap<>();
+        Block.getGroups().forEach(group -> {
+            ArrayList<Block> blocks = new ArrayList<>();
+            String [] nombres= Block.getNamesBlocksByGroup(group);
+            for (String nombre : nombres) {
+
+                Block tb = new Block(group,nombre);
+                blocks.add(tb);
+
+                switch (tb.getType()) {
+                    case "Borrador":
+                        tb.addClickListener(() -> {
+                            this.editor.changMode(EditorCanvas.MODO_EDITOR.DELETE);
+                        });
+                        break;
+                    case "Puntero":
+                        tb.addClickListener(() -> {
+                            this.editor.changMode(EditorCanvas.MODO_EDITOR.NONE);
+                        });
+                        break;
+                    default:
+                        Block finalTb = tb;
+                        tb.addClickListener(() -> {
+                            this.editor.changMode(EditorCanvas.MODO_EDITOR.ADD);
+                            this.editor.setBlock(finalTb);
+                        });
+
+                }
+
+
+            }
+            map.put(group,blocks);
+            System.out.println(group);
+        });
+       // System.out.println(Arrays.toString(Block.getGroups()));
+      /*  Arrays.stream(Block.getGroups()).forEach(group -> {
+            ArrayList<Block> blocks = new ArrayList<>();
+            String [] nombres= Block.getNamesBlocksByGroup(group);
+            for (String nombre : nombres) {
+
+                Block tb = new Block(group,nombre);
+                blocks.add(tb);
+
+                switch (tb.getType()) {
+                    case "Borrador":
+                        tb.addClickListener(() -> {
+                            this.editor.changMode(EditorCanvas.MODO_EDITOR.DELETE);
+                        });
+                        break;
+                    case "Puntero":
+                        tb.addClickListener(() -> {
+                            this.editor.changMode(EditorCanvas.MODO_EDITOR.NONE);
+                        });
+                        break;
+                    default:
+                        Block finalTb = tb;
+                        tb.addClickListener(() -> {
+                            this.editor.changMode(EditorCanvas.MODO_EDITOR.ADD);
+                            this.editor.setBlock(finalTb);
+                        });
+
+                }
+
+
+            }
+            map.put(group,blocks);
+
+        });*/
+
+        ElementsPanel ep= new ElementsPanel(map);
+
+      //  b.init();
+        return ep;
     }
 
     /**
      * crea el editor de nivels
      *
-
      */
     private EditorCanvas createEditor() {
         this.editor = new EditorCanvas();
-       // this.editor.setBoard_size(new Size(this.width*2, this.height));
+        // this.editor.setBoard_size(new Size(this.width*2, this.height));
         //por los bordes da 29 filas y 13 columnas
-       // this.editor.setRows(ROWS);
+        // this.editor.setRows(ROWS);
         //por los bordes
-       // this.editor.setCols(COLUMNS);
+        // this.editor.setCols(COLUMNS);
         this.editor.init();
         return this.editor;
     }
@@ -138,8 +201,8 @@ public class App extends Application {
         LevelsPanel levelspanel = new LevelsPanel();
         levelspanel.init();
         levelspanel.setOnadd((s) -> {
-            Level l = new Level(s.getName(),s.getSize());
-           
+            Level l = new Level(s.getName(), s.getSize());
+
             l.setSize(s.getSize());
             l.init();
             this.levels.addLevel(l);
@@ -173,7 +236,7 @@ public class App extends Application {
         levelspanel.setOnplay(() -> {
             if (this.levels.getSelected() != null) {
                 //si es nulo y existe una cancion
-                if ((this.mp == null && this.levels.getSelected().getSound() != null ) || (this.mp!=null && this.mp.getMedia().getSource()!= this.levels.getSelected().getSound())) {
+                if ((this.mp == null && this.levels.getSelected().getSound() != null) || (this.mp != null && this.mp.getMedia().getSource() != this.levels.getSelected().getSound())) {
                     this.mp = new MediaPlayer(new Media(new File(this.levels.getSelected().getSound().replace("\\", "//")).toURI().toString()));
                     this.mp.setCycleCount(MediaPlayer.INDEFINITE);
                 }
@@ -202,9 +265,9 @@ public class App extends Application {
         Menu fileMenu = new Menu("File");
         MenuItem newMenuItem = new MenuItem("New");
         newMenuItem.setOnAction(eh -> {
-           this.levels.reset();
-           this.editor.reset();
-           this.levelsPanel.reset();
+            this.levels.reset();
+            this.editor.reset();
+            this.levelsPanel.reset();
         });
         MenuItem saveMenuItem = new MenuItem("Save");
         saveMenuItem.setOnAction(actionEvent -> {
@@ -220,7 +283,7 @@ public class App extends Application {
                 try {
                     Levels.save(this.levels, file);
                 } catch (JAXBException ex) {
-                   Alert alert = new Alert(AlertType.ERROR);
+                    Alert alert = new Alert(AlertType.ERROR);
                     alert.setTitle("Infor error");
                     alert.setHeaderText(null);
                     alert.setContentText(ex.getMessage());
@@ -234,7 +297,7 @@ public class App extends Application {
                     alert.setContentText(ex.getMessage());
 
                     alert.showAndWait();
-                   // ex.printStackTrace();
+                    // ex.printStackTrace();
                 }
             }
 
@@ -252,14 +315,14 @@ public class App extends Application {
                 try {
                     Levels m = Levels.load(file);
                     //this.editor.reset(new Size(m.getBlocks().length, m.getBlocks()[0].length));
-                    this.levels=m;
+                    this.levels = m;
                     this.levels.setSelected(0);
                     this.editor.reset();
                     this.editor.setLevel(this.levels.getSelected());
                     this.levelsPanel.reset();
                     this.levelsPanel.setItems(this.levels);
                     //this.editor.setLevel();
-                   // this.editor.draw();
+                    // this.editor.draw();
                 } catch (IOException ex) {
                     Alert alert = new Alert(AlertType.ERROR);
                     alert.setTitle("Infor error");
@@ -311,10 +374,10 @@ public class App extends Application {
             Optional<ImageWithPath> result = db.showAndWait();
             if (result.isPresent()) {
                 result.get();
-                 if (this.editor.getLevel() != null) {
-                    Image img=result.get().getImage();
+                if (this.editor.getLevel() != null) {
+                    Image img = result.get().getImage();
                     this.editor.getLevel().setBackgroundPosition(result.get().getPath());
-                 //   this.editor.getLevel()..setBackgroundPosition(result.get());
+                    //   this.editor.getLevel()..setBackgroundPosition(result.get());
                     this.editor.setRepaintbackground(true);
                     this.editor.draw();
                 }

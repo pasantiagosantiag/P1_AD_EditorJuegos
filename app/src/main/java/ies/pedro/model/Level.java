@@ -6,6 +6,7 @@ package ies.pedro.model;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
+import ies.pedro.utils.Point;
 import ies.pedro.utils.Point2DAdapterXML;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -25,10 +26,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @XmlRootElement
 
@@ -36,7 +34,7 @@ public class Level implements Serializable {
     @Expose
     private Size size;
     @Expose
-    private Block[][] blocks;
+
     private ArrayList<Block> elements;
     @Expose
     private double time;
@@ -65,20 +63,11 @@ public class Level implements Serializable {
     }
 
     public void init() {
-        this.setBlocks(new Block[this.getSize().getHeight()][this.getSize().getWidth()]);
-        for (int i = 0; i < this.getBlocks().length; i++) {
-            for (int j = 0; j < this.getBlocks()[i].length; j++) {
-                if (this.getBlocks()[i][j] == null)
-                    this.getBlocks()[i][j] = new Block();
 
-            }
-        }
     }
 
     public void reset() {
-        for (int i = 0; i < this.getBlocks().length; i++) {
-            Arrays.fill(this.getBlocks()[i], null);
-        }
+
         this.elements.clear();
         this.backgroundImage = null;
         this.sound = null;
@@ -93,18 +82,26 @@ public class Level implements Serializable {
     public void removeElement(Block block) {
         this.elements.remove(block);
     }
-
-    public void setBlockValue(String value, int row, int col) {
-
-        this.getBlocks()[row][col].setType(value);
+    public boolean intersects(Block b) {
+        for (Block block : this.elements) {
+            if(block.getRectangle().intersects(b.getRectangle())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public Optional<Block> getByPosition(int x, int y){
+        for (Block block : this.elements) {
+            if(block.getRectangle().contains(x,y) ){
+                return Optional.of(block);
+            }
+        }
+        return Optional.empty();
     }
 
-    public String getBlockValue(int row, int col) {
-        if (this.getBlocks()[row][col] == null || this.getBlocks()[row][col].getType() == null)
-            return null;
-        else
-            return this.getBlocks()[row][col].getType();
-    }
+
+
+
 
     public Size getSize() {
         return size;
@@ -130,13 +127,6 @@ public class Level implements Serializable {
         this.sound = sound;
     }
 
-    public Block[][] getBlocks() {
-        return blocks;
-    }
-
-    public void setBlocks(Block[][] blocks) {
-        this.blocks = blocks;
-    }
 
     public List<Block> getElements() {
         return  Collections.unmodifiableList(this.elements);
